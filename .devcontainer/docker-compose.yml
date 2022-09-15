@@ -1,0 +1,40 @@
+version: '3.8'
+
+volumes:
+  qmdata:
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    #environment:
+     #- MQSERVER=DEV.APP.SVRCONN/TCP/mqseries(1414)
+     #- MQ_CONNECT_TYPE=CLIENT
+    # - MQSSLKEYR=/mnt/mqm/certs/client
+    volumes:
+      - ..:/workspace:cached
+      - qmdata:/mnt/mqm 
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+
+    # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
+    network_mode: service:mqseries
+
+  mqseries:
+      image: ibmcom/mq:latest
+      volumes:
+       - qmdata:/mnt/mqm 
+       - ./sslconfig.mqsc:/etc/mqm/sslconfig.mqsc
+      ports:
+       - "1414:1414"
+       - "9443:9443"
+      hostname: mq
+      environment:
+       - LICENSE=accept
+       - MQ_QMGR_NAME=QM1
+      # - MQ_APP_PASSWORD=passw0rd
+     #  - MQ_TLS_KEYSTORE=/mnt/mqm/MQServer/certs/server
+     #  - MQ_TLS_PASSPHRASE=k3ypassw0rd
+      stdin_open: true
+      tty: true
+      restart: always

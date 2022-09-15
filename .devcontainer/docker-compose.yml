@@ -7,10 +7,6 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-    #environment:
-     #- MQSERVER=DEV.APP.SVRCONN/TCP/mqseries(1414)
-     #- MQ_CONNECT_TYPE=CLIENT
-    # - MQSSLKEYR=/mnt/mqm/certs/client
     volumes:
       - ..:/workspace:cached
       - qmdata:/mnt/mqm 
@@ -32,9 +28,6 @@ services:
       environment:
        - LICENSE=accept
        - MQ_QMGR_NAME=QM1
-      # - MQ_APP_PASSWORD=passw0rd
-     #  - MQ_TLS_KEYSTORE=/mnt/mqm/MQServer/certs/server
-     #  - MQ_TLS_PASSPHRASE=k3ypassw0rd
       stdin_open: true
       tty: true
       restart: always

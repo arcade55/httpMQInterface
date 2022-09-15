@@ -1,0 +1,52 @@
+14 Sep 2022 12:04 looking at using volumes and scripts to create mq server and mq client certicates
+
+using:
+
+docker run -i --entrypoint=/bin/bash --volume hostgettermdepositdetails_devcontainer_qmdata:/mnt/mqm ibmcom/mq:latest < selfCertCreation.sh 
+
+
+
+contents of ascript.sh
+cd /mnt/mqm
+mkdir -p MQServer/certs
+cd MQServer/certs
+touch testtest
+
+
+with this approach, a favourable result would be to run a script to build the necessary tls dbs with the extracted
+and imported certs and have this on the results on a volume which the running instances of the mq server and the mq client could then
+reference.
+
+This would enable repeatable builds etc. etc. 
+
+
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/ianlopshire/go-fixedwidth"
+)
+
+func main() {
+	// define some data to encode
+	people := []struct {
+		ID        int     `fixed:"1,5"`
+		FirstName string  `fixed:"6,15"`
+		LastName  string  `fixed:"16,25"`
+		Grade     float64 `fixed:"26,30"`
+		Age       uint    `fixed:"31,33"`
+		Alive     bool    `fixed:"34,39"`
+	}{
+		{1, "Ian", "Lopshire", 99.5, 20, true},
+	}
+
+	data, err := fixedwidth.Marshal(people)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%s", data)
+	// Output:
+	// 1    Ian       Lopshire  99.5020 true
+}
